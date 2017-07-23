@@ -1,0 +1,5 @@
+// Place your settings in this file to overwrite the default settings
+{
+    "go.gopath": "/home/diego/codigos/go",
+    "go.goroot": "/usr/local/go"
+}
