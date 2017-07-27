@@ -3,28 +3,15 @@ package routes
 import (
 	"autenticacao-jwt/domain"
 	"autenticacao-jwt/utils"
-	"crypto/rsa"
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
 	"log"
 	"net/http"
 	"strings"
 	"time"
 
-	jwt "github.com/dgrijalva/jwt-go"
-)
-
-var (
-	verifyKey *rsa.PublicKey
-	signKey   *rsa.PrivateKey
-)
-
-const (
-	// For simplicity these files are in the same folder as the app binary.
-	// You shouldn't do this in production.
-	privKeyPath = "keys/app.rsa"
-	pubKeyPath  = "keys/app.rsa.pub"
+	"github.com/dgrijalva/jwt-go"
+	"autenticacao-jwt/config"
 )
 
 func fatal(err error) {
@@ -34,7 +21,6 @@ func fatal(err error) {
 }
 
 func LoginHandler(w http.ResponseWriter, r *http.Request) {
-	initKeys()
 	var user domain.UserCredentials
 
 	err := json.NewDecoder(r.Body).Decode(&user)
@@ -66,7 +52,7 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 		fatal(err)
 	}
 
-	tokenString, err := token.SignedString(signKey)
+	tokenString, err := token.SignedString(config.SignKey)
 
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
@@ -77,18 +63,4 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 	response := domain.Token{tokenString}
 	utils.JsonResponse(response, w)
 
-}
-
-func initKeys() {
-	signBytes, err := ioutil.ReadFile(privKeyPath)
-	fatal(err)
-
-	signKey, err = jwt.ParseRSAPrivateKeyFromPEM(signBytes)
-	fatal(err)
-
-	verifyBytes, err := ioutil.ReadFile(pubKeyPath)
-	fatal(err)
-
-	verifyKey, err = jwt.ParseRSAPublicKeyFromPEM(verifyBytes)
-	fatal(err)
 }

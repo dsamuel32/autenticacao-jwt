@@ -15,7 +15,12 @@ import (
 	"autenticacao-jwt/routes"
 	"log"
 	"net/http"
+	"autenticacao-jwt/config"
 )
+
+func init() {
+	config.InitKeys()
+}
 
 //https://thenewstack.io/make-a-restful-json-api-go/
 func main() {

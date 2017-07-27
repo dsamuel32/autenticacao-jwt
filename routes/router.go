@@ -10,6 +10,7 @@ import (
 	jwt "github.com/dgrijalva/jwt-go"
 	"github.com/dgrijalva/jwt-go/request"
 	"github.com/gorilla/mux"
+	"autenticacao-jwt/config"
 )
 
 func NewRouter() *mux.Router {
@@ -69,7 +70,7 @@ func validateTokenMiddleware(w http.ResponseWriter, r *http.Request, next http.H
 
 	token, err := request.ParseFromRequest(r, request.AuthorizationHeaderExtractor,
 		func(token *jwt.Token) (interface{}, error) {
-			return verifyKey, nil
+			return config.VerifyKey, nil
 		})
 
 	if err == nil {
